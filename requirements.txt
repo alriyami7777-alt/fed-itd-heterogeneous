@@ -1,0 +1,8 @@
+# Versions to be pinned later.
+torch
+numpy
+pandas
+scikit-learn
+xgboost
+scipy
+pyarrow
