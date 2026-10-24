@@ -24,7 +24,7 @@ Get each dataset from its provider and accept its terms.
 |---|---|---|
 | CERT r4.2 / r5.2 | https://kilthub.cmu.edu/articles/dataset/Insider_Threat_Test_Dataset/12841247 | See provider |
 | SPEDIA v1.0 | https://doi.org/10.5281/zenodo.15495572 (collection tools: https://github.com/UPM-RSTI/SPEDIA-Dataset) | CC BY 4.0 |
-| LANL | https://doi.org/10.17021/1179829 | CC0 |
+| LANL | https://doi.org/10.17021/1179829 (if the DOI page does not load: https://csr.lanl.gov/data/cyber1/) | CC0 |
 | TWOS (post-review test E-11 only) | From its authors, under a release agreement (Harilal et al., 2017) | Not redistributable |
 
 TWOS may not be redistributed, so request it from its authors yourself. This repository holds no TWOS file of any kind: only the code that builds the table and group-level results.
@@ -63,6 +63,8 @@ python scripts/data/repair_lanl_hourstd.py --ijacsa-repo <clone>
 python scripts/data/build_twos_userday.py --ijacsa-repo <clone> --twos-dir <TWOS release folder> --traitors <five traitor users>
 # E-6: SPEDIA label variants -> data/derived/spedia_user_day_<variant>.parquet
 IJACSA_REPO=<clone> python scripts/review2/build_spedia_variants.py <path to logs_SPEDIA.csv>
+# E-2 (C2, S1C2): CERT r5.2 table from logon/logoff events only -> data/derived/cert52_user_day_cov_logon_rebuild.parquet
+IJACSA_REPO=<clone> python scripts/data/rebuild_c52.py <path to CERT r5.2 logon.csv>
 ```
 
 For TWOS, the builder takes the five traitor user names from the TWOS release documentation, so they are not repeated here. `run_r2.py` checks the TWOS table against the SHA-256 `fedadd4a707a92d0b8977bc134115121a4e2ddd03a727c067c55d1bd31c5bd31`. A different `pyarrow` version can change this hash without changing the table.
@@ -121,7 +123,14 @@ python scripts/review_metrics.py              # ROC-AUC, recall at 1%, threshold
 python scripts/spedia_cluster_boot.py         # user-level bootstrap for SPEDIA
 python scripts/c3_analysis.py --source review --seeds 0-19
 python scripts/summarise_confirm.py
+python scripts/loo_summary.py                 # leave-one-out summary -> results/review/*_regenerated.csv
+python scripts/fednova_sgd_summary.py         # FedNova with local SGD, seeds 0-4 -> results/review/fednova_sgd_s0-4.csv
 ```
+
+**Two rewritten scripts.** The original scripts behind two inputs were not kept, so they were rewritten on 24 October 2026 and checked against the files they replace. The checks are stated in each script's docstring.
+
+- `scripts/data/rebuild_c52.py` rebuilds the CERT r5.2 logon/logoff-only table for E-2. Its output equals the original table exactly: the same 693,649 user-days, labels, all 42 feature values and data types. Only the parquet file bytes differ, so the SHA-256 differs too. Compare contents, not hashes.
+- `scripts/loo_summary.py` rebuilds the leave-one-out summary. It reproduces every mean and label of `results/review/loo_summary_s0-19.csv` exactly. Its bootstrap intervals differ by at most 0.002, because the original helper drew its resamples differently. No interval changes sign. Its output is published as `results/review/loo_summary_s0-19_regenerated.csv` and `loo_all_seeds_s0-19_regenerated.csv`, so the published numbers come from published code. The original summary file is kept unchanged. Run it with `--check` to compare the two.
 
 **Post-review tests (E-1 to E-12).** Each test is logged in the change log of `docs/protocol.md` before it was run. Most are exploratory with 5 seeds (0–4). E-1, E-3 and E-11 use 20 seeds. E-12 and E-4 use seeds 5–19.
 
@@ -154,9 +163,10 @@ python scripts/review2/r2_stats.py
 python scripts/review2/e8_r5_no_hindsight.py
 python scripts/review2/e1_convergence_plots.py
 python scripts/review2/make_doc33.py
+python scripts/review2/make_doc37.py             # E-4 summary tables
 ```
 
-`e2_C2` and `e2_S1C2` also need `data/derived/cert52_user_day_cov_logon_rebuild.parquet`. Its build script is not yet in this repository.
+`e2_C2` and `e2_S1C2` also need `data/derived/cert52_user_day_cov_logon_rebuild.parquet`, built by `scripts/data/rebuild_c52.py` (see above).
 
 **Exploratory, outside the protocol:** `scripts/run_extra.py`, `src/gating.py` and `scripts/summarise_extra.py`.
 
@@ -185,7 +195,9 @@ Summary tables only. Per-row predictions and per-seed raw files are not included
 | `results/fedprox_mu.json` | FedProx μ chosen on validation |
 | `results/review/stats_review_s0-19.csv` | Each federated method vs training alone, per member: mean difference, bootstrap and t intervals, Holm-adjusted p-values (20 seeds) |
 | `results/review/stats_counts_review_s0-19.csv` | Number of significant gains and losses per method under each test |
-| `results/review/loo_summary_s0-19.csv` | Leave-one-out: PR-AUC on the unseen organisation vs the best single source |
+| `results/review/loo_summary_s0-19.csv` | Leave-one-out: PR-AUC on the unseen organisation vs the best single source (original file) |
+| `results/review/loo_summary_s0-19_regenerated.csv` | The same summary, regenerated by `scripts/loo_summary.py`: identical means and labels; intervals differ by at most 0.002 |
+| `results/review/loo_all_seeds_s0-19_regenerated.csv` | Leave-one-out PR-AUC per seed and unseen organisation (input to the summary above) |
 | `results/review/fednova_sgd_s0-4.csv` | FedNova with plain local SGD vs training alone and vs FedNova with Adam (5 seeds) |
 | `results/review/metrics_by_cell.csv` | Secondary metrics per method, federation and member: ROC-AUC, recall at 1%, precision, recall, F1 |
 | `results/review/spedia_cluster_boot.csv` | SPEDIA user-level bootstrap intervals for PR-AUC and for the difference from training alone |
@@ -201,8 +213,10 @@ Summary tables only. Per-row predictions and per-seed raw files are not included
 | `results/review2/e9_summary.csv` | E-9: federated vs local at other time cuts (0.6 and 0.8) |
 | `results/review2/e10_builds.csv` | E-10: each LANL rebuild: positive user-days and users, events per positive day, local PR-AUC |
 | `results/review2/e10_effects.csv` | E-10: federated vs local effects on each LANL rebuild |
+| `results/review2/stats_e4.csv` | E-4: CERT r4.2 with 1–25% of its labels: FedAvg with the full CERT r5.2 (size, equal) vs the best of local training, the CERT r5.2 model as is, and that model fine-tuned; with the same label budget for validation and with the full validation set (seeds 5–19) |
+| `results/review2/e4_per_seed_winner.csv` | E-4: test PR-AUC of every option on each seed, and which option won |
 
-The E-1 convergence plots (validation PR-AUC per round, seeds 0–4) are made by `scripts/review2/e1_convergence_plots.py`. E-3 and E-4 results will be added when those runs finish.
+The E-1 convergence plots (validation PR-AUC per round, seeds 0–4) are made by `scripts/review2/e1_convergence_plots.py`. E-3 results will be added when that run finishes.
 
 ## Test plan
 
