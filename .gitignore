@@ -21,3 +21,7 @@ results/review/preds/
 results/review2/preds/
 results/**/log_*.txt
 outputs/
+
+# TWOS outputs below group level (never committed: TWOS may not be redistributed)
+results/review2/e11_twos_*
+results/review2/hist/

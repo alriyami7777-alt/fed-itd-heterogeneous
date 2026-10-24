@@ -25,6 +25,9 @@ Get each dataset from its provider and accept its terms.
 | CERT r4.2 / r5.2 | https://kilthub.cmu.edu/articles/dataset/Insider_Threat_Test_Dataset/12841247 | See provider |
 | SPEDIA v1.0 | https://doi.org/10.5281/zenodo.15495572 (collection tools: https://github.com/UPM-RSTI/SPEDIA-Dataset) | CC BY 4.0 |
 | LANL | https://doi.org/10.17021/1179829 | CC0 |
+| TWOS (post-review test E-11 only) | From its authors, under a release agreement (Harilal et al., 2017) | Not redistributable |
+
+TWOS may not be redistributed, so request it from its authors yourself. This repository holds no TWOS file of any kind: only the code that builds the table and group-level results.
 
 ## Building the user-day tables
 
@@ -52,6 +55,17 @@ python scripts/data/repair_lanl_hourstd.py --ijacsa-repo <clone>
 - `lanl_rebuild_E10.py` does the same work but can fall back to pickle files. It was needed only on a machine where a security policy blocked `pyarrow`. Use the original wherever `pyarrow` works.
 - `repair_lanl_hourstd.py` fixes an integer overflow in `hour_std` that appears only on Windows.
 - The rebuild reads about one billion raw rows and takes 1–2 hours.
+
+**Other tables for the post-review tests.** Put the outputs in `$FITD_ROOT/data/`:
+
+```bash
+# E-11: TWOS user-day table (logon events only) -> data/twos/twos_user_day_dev_v1_logon.parquet
+python scripts/data/build_twos_userday.py --ijacsa-repo <clone> --twos-dir <TWOS release folder> --traitors <five traitor users>
+# E-6: SPEDIA label variants -> data/derived/spedia_user_day_<variant>.parquet
+IJACSA_REPO=<clone> python scripts/review2/build_spedia_variants.py <path to logs_SPEDIA.csv>
+```
+
+For TWOS, the builder takes the five traitor user names from the TWOS release documentation, so they are not repeated here. `run_r2.py` checks the TWOS table against the SHA-256 `fedadd4a707a92d0b8977bc134115121a4e2ddd03a727c067c55d1bd31c5bd31`. A different `pyarrow` version can change this hash without changing the table.
 
 ## Setup
 
@@ -109,6 +123,41 @@ python scripts/c3_analysis.py --source review --seeds 0-19
 python scripts/summarise_confirm.py
 ```
 
+**Post-review tests (E-1 to E-12).** Each test is logged in the change log of `docs/protocol.md` before it was run. Most are exploratory with 5 seeds (0–4). E-1, E-3 and E-11 use 20 seeds. E-12 and E-4 use seeds 5–19.
+
+```bash
+# E-1: plain-SGD FedAvg vs FedNova (learning rate chosen on seed 0, validation only)
+python scripts/review2/run_r2.py e1_sel 0
+for j in e1_local e1_fedavg_size e1_fedavg_equal e1_fednova_size e1_fednova_equal e1_fixed; do python scripts/review2/run_r2.py $j 0-19; done
+python scripts/review2/run_r2.py e1_ref 0            # FedNova reference check on synthetic data
+# the learning-rate grid was later extended at its edges (change log, 20 Oct): run e1_selx 0, then
+# scripts/review2/e1_apply_ext.py, then the E-1 jobs again (finished seeds are skipped)
+# E-11: TWOS as a fifth member
+for j in e11_main e11_user e11_trees; do python scripts/review2/run_r2.py $j 0-4; done
+python scripts/review2/run_r2.py e11_main 0-19
+python scripts/review2/e11_extra.py 0-4
+# E-3: matched personalisation (FedPer-H, FedPer-2, Ditto)
+python scripts/review2/run_r2.py e3_ditto_sel 0
+for j in e3_fedperh e3_fedper2 e3_ditto; do python scripts/review2/run_r2.py $j 0-19; done
+# E-6 label variants, E-5 controlled triples, E-7 trees on training rows, E-9 time cuts, E-10 LANL rebuilds
+for j in e6_ii_desc e6_iii_sev7_or_desc; do python scripts/review2/run_r2.py $j 0-4; done
+for j in e5_fedavg_size e5_fedavg_equal e5_fedprox e5_fedper e5_fedper_in e5_finetune e5_fednova_size e5_fednova_equal; do python scripts/review2/run_r2.py $j 0-4; done
+python scripts/review2/run_r2.py e7 0-4
+for j in e9_q0.6 e9_q0.8 e10_f05_s7 e10_f02_s8 e10_f02_s9; do python scripts/review2/run_r2.py $j 0-4; done
+# E-2: controlled federation within CERT r5.2
+for j in e2_R e2_S1 e2_S1b e2_S2 e2_P e2_C1 e2_C2 e2_S1C2; do python scripts/review2/run_r2.py $j 0-4; done
+# E-12 and E-4
+python scripts/review2/run_r2.py e12 5-19
+python scripts/review2/run_r2.py e4 5-19
+# statistics, E-8 (no training) and plots
+python scripts/review2/r2_stats.py
+python scripts/review2/e8_r5_no_hindsight.py
+python scripts/review2/e1_convergence_plots.py
+python scripts/review2/make_doc33.py
+```
+
+`e2_C2` and `e2_S1C2` also need `data/derived/cert52_user_day_cov_logon_rebuild.parquet`. Its build script is not yet in this repository.
+
 **Exploratory, outside the protocol:** `scripts/run_extra.py`, `src/gating.py` and `scripts/summarise_extra.py`.
 
 **Run times.** These are measured on 2 CPU cores with 2 torch threads, per seed:
@@ -141,6 +190,19 @@ Summary tables only. Per-row predictions and per-seed raw files are not included
 | `results/review/metrics_by_cell.csv` | Secondary metrics per method, federation and member: ROC-AUC, recall at 1%, precision, recall, F1 |
 | `results/review/spedia_cluster_boot.csv` | SPEDIA user-level bootstrap intervals for PR-AUC and for the difference from training alone |
 | `results/review/c3_spearman_review_s0-19.csv` | Spearman correlation between similarity and gain (20 seeds) |
+| `results/review2/stats_e1.csv` | E-1: plain-SGD FedAvg and FedNova vs each member's SGD local baseline; FedNova vs FedAvg with the same solver; the fixed-step variant (20 seeds) |
+| `results/review2/stats_e2.csv` | E-2: controlled federation within CERT r5.2, per variant and member |
+| `results/review2/stats_e5.csv` | E-5: controlled three-member groups under the six planned methods, plus FedNova (exploratory) |
+| `results/review2/stats_e6.csv` | E-6: SPEDIA label variants, federated vs local |
+| `results/review2/stats_e11.csv` | E-11: TWOS as a fifth member, at group level only (PR-AUC differences and intervals per method and group) |
+| `results/review2/stats_e12.csv` | E-12: extra SPEDIA steps per round with the main checkpoint rule, vs usual local training, vs the C-1 checkpoint rule, and SPEDIA vs the same steps alone (seeds 5–19) |
+| `results/review2/e7_summary.csv` | E-7: random forest and XGBoost on training rows only vs training plus validation, and vs the MLP |
+| `results/review2/e8_summary.csv` | E-8: transfer to an unseen organisation without hindsight (selected source, ensemble) vs leave-one-out, the best single source in hindsight and the average source |
+| `results/review2/e9_summary.csv` | E-9: federated vs local at other time cuts (0.6 and 0.8) |
+| `results/review2/e10_builds.csv` | E-10: each LANL rebuild: positive user-days and users, events per positive day, local PR-AUC |
+| `results/review2/e10_effects.csv` | E-10: federated vs local effects on each LANL rebuild |
+
+The E-1 convergence plots (validation PR-AUC per round, seeds 0–4) are made by `scripts/review2/e1_convergence_plots.py`. E-3 and E-4 results will be added when those runs finish.
 
 ## Test plan
 
