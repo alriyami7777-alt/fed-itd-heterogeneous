@@ -1,0 +1,7 @@
+subset,measure,n,spearman_rho,exact_perm_p,permutations
+all 10 points,Jaccard overlap of observed actions,10,0.3446561747421316,0.3414285714285714,3628800
+all 10 points,Jensen-Shannon distance,10,-0.46774766572146437,0.18315696649029983,3628800
+all 10 points,prevalence ratio,10,-0.4185110693297313,0.2387830687830688,3628800
+CERT-scored (5 points),Jaccard overlap of observed actions,5,0.8720815992723809,0.1,120
+CERT-scored (5 points),Jensen-Shannon distance,5,-0.6668859288553503,0.26666666666666666,120
+CERT-scored (5 points),prevalence ratio,5,-0.5642880936468347,0.4,120

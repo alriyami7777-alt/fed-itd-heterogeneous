@@ -7,12 +7,17 @@ venv/
 .ipynb_checkpoints/
 .env
 
-# Data and outputs (never committed)
+# Data: never committed (see data/README.md)
 data/*
 !data/README.md
-outputs/
 *.parquet
+*.pkl
+*.npz
 *.zip
 
-# Local configuration
-config/paths.yaml
+# Run outputs that hold per-row predictions or logs
+results/preds/
+results/review/preds/
+results/review2/preds/
+results/**/log_*.txt
+outputs/

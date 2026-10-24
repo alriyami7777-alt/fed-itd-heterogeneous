@@ -1,8 +1,10 @@
-# Versions to be pinned later.
-torch
-numpy
-pandas
-scikit-learn
-xgboost
-scipy
-pyarrow
+# Exact versions used for all runs (Python 3.13.16, Linux x86_64, 2 CPU cores)
+numpy==2.5.3
+pandas==3.0.5
+pyarrow==26.0.0
+scikit-learn==1.9.1
+scipy==1.18.1
+torch==2.14.1
+xgboost==3.4.1
+matplotlib==3.11.2
+openpyxl==3.1.5

@@ -1,0 +1,18 @@
+regime,scope,comparisons,loss_boot,gain_boot,loss_t,gain_t,loss_holm,gain_holm,loss_holm_all,gain_holm_all
+FedAvg (size),17 protocol cells,17,12,1,12,1,8,0,8,0
+FedAvg (size),19 incl. C2+C4,19,13,1,13,1,–,–,9,0
+FedAvg (equal),17 protocol cells,17,10,3,10,2,7,2,7,2
+FedAvg (equal),19 incl. C2+C4,19,11,3,11,2,–,–,8,2
+FedProx (μ=0.001),17 protocol cells,17,9,2,9,2,7,1,7,0
+FedProx (μ=0.001),19 incl. C2+C4,19,9,2,9,2,–,–,7,0
+FedPer (local output layer),17 protocol cells,17,10,1,10,0,6,0,6,0
+FedPer (local output layer),19 incl. C2+C4,19,10,1,10,0,–,–,6,0
+Private first layer,17 protocol cells,17,9,2,9,2,4,0,4,0
+Private first layer,19 incl. C2+C4,19,10,2,10,2,–,–,4,0
+FedAvg + fine-tune,17 protocol cells,17,10,4,9,2,5,0,5,0
+FedAvg + fine-tune,19 incl. C2+C4,19,11,5,10,3,–,–,5,0
+Pooled MLP (no privacy),17 protocol cells,4,1,1,1,0,–,–,0,0
+FedNova (size),17 protocol cells,17,11,2,11,2,–,–,8,2
+FedNova (size),19 incl. C2+C4,19,12,2,12,2,–,–,9,2
+FedNova (equal),17 protocol cells,17,13,2,13,1,–,–,12,1
+FedNova (equal),19 incl. C2+C4,19,14,2,14,1,–,–,13,1

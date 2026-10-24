@@ -1,103 +1,161 @@
-# Who Gains from Federated Insider-Threat Detection?
+# Who Gains from Federated Insider-Threat Detection? Collaboration across Synthetic and Real Security Logs
 
-Code and materials for a study of federated insider-threat detection across four public datasets: two synthetic, one with human-made attacks and one from a real enterprise.
+**Status:** under review at *Applied Soft Computing* (Elsevier).
 
-## Paper
+Code, test plan and summary results for the paper. No data is included.
 
-Alriyami, Q., Mohamad, M. M., and Muhammad, Y. I. *Who Gains from Federated Insider-Threat Detection? Collaboration across Synthetic and Real Security Logs.* Submitted to *Applied Soft Computing* (Elsevier).
+## What it does
 
-BibTeX (to be updated on acceptance):
+The study treats public insider-threat datasets as separate organisations: CERT r4.2 and CERT r5.2 (synthetic), SPEDIA v1.0 (attacks by people, simulated normal activity) and LANL (real enterprise authentication logs with red-team activity). Each dataset is turned into the same user-day table with 42 features.
 
-```bibtex
-@article{alriyami_fed_itd,
-  author  = {Alriyami, Qasim and Mohamad, Mohd Murtadha and Muhammad, Yusuf Idris},
-  title   = {Who Gains from Federated Insider-Threat Detection? Collaboration across Synthetic and Real Security Logs},
-  journal = {Applied Soft Computing},
-  year    = {2026},
-  note    = {Submitted}
-}
-```
+One small neural network (an MLP) is trained in three ways:
 
-## Overview
+- **alone**, on each organisation's own data;
+- **pooled**, on all organisations' data together (no privacy, as a reference);
+- **in federations**, with FedAvg (size or equal weights), FedProx, FedPer, a private first layer, FedAvg with local fine-tuning, and FedNova.
 
-Four public insider-threat datasets act as four organisations in a simulated federated-learning set-up: CERT r4.2 and CERT r5.2 (synthetic), SPEDIA v1.0 (attacks by people, simulated normal activity) and LANL (real enterprise authentication logs with red-team activity). All four are converted to one user-day format with 42 features. Each dataset is split by time, except LANL, which is split by user. A multilayer perceptron is trained alone, on pooled data, and with several federated methods: FedAvg (size or equal weights), FedProx, FedPer, a private first layer, local fine-tuning and FedNova. Leave-one-out and single-source transfer are also run. The main measure is PR-AUC per client, tested with an exact paired bootstrap over seeds, a paired t-test as a check, and a user-level bootstrap for SPEDIA. Seeds 0–19 are used for the main runs and seeds 5–19 for the confirmatory runs.
+For each member of each federation, the paper reports the gain or loss in PR-AUC against training alone, over 20 runs (seeds 0–19). Leave-one-out and single-source transfer to an unseen organisation are also run.
 
-## Datasets and access
+## Data (not included)
 
-This repository does not redistribute any data. Please obtain each dataset from its source and accept its terms.
+Get each dataset from its provider and accept its terms.
 
 | Dataset | Source | Licence |
 |---|---|---|
-| CERT Insider Threat Test Dataset r4.2 and r5.2 | https://kilthub.cmu.edu/articles/dataset/Insider_Threat_Test_Dataset/12841247 | See source |
-| SPEDIA v1.0 | Zenodo: [link to be added] | CC BY 4.0 |
-| LANL Comprehensive Multi-Source Cyber-Security Events | https://csr.lanl.gov/data/cyber1/ | CC0 |
+| CERT r4.2 / r5.2 | https://kilthub.cmu.edu/articles/dataset/Insider_Threat_Test_Dataset/12841247 | See provider |
+| SPEDIA v1.0 | https://doi.org/10.5281/zenodo.15495572 (collection tools: https://github.com/UPM-RSTI/SPEDIA-Dataset) | CC BY 4.0 |
+| LANL | https://doi.org/10.17021/1179829 | CC0 |
 
-See [`data/README.md`](data/README.md) for where to place the files.
+## Building the user-day tables
 
-## Installation
+The four user-day tables come from the pipeline of our earlier cross-dataset study: [crossdataset-insider-threat](https://github.com/alriyami7777-alt/crossdataset-insider-threat). They are built by `scripts/strict_camera_ready_2026_09_15.py` in that repository (stages `build-c2` and `build-rest`) and copied unchanged to `$FITD_ROOT/data/` as `{cert42,cert52,spedia,lanl}_user_day_dev.parquet`.
 
-Python version: to be added.
+Check your copies against these SHA-256 hashes:
+
+| Table | SHA-256 |
+|---|---|
+| cert42 | `99bbcd739f6f3fd718b37406415cf9d2b8dc4d1b772b62950b0ee7f39582c011` |
+| cert52 | `8850a1eef4fc4b64b6509ddd00182fce4f88695593f0123d6cd6fddb1b151156` |
+| spedia | `5d1727eb7461e1c5de117bee613d315d1999711d61a9402111161334c6e523d3` |
+| lanl | `e78d635a029aa8b7380edbb1e65b56ca9249ba7d7148f29ac16065b5d5c93d9b` |
+
+Each table holds 42 features over 16 actions, plus `user`, `day` and `label`.
+
+**LANL rebuild (E-10).** `scripts/data/` rebuilds LANL from the raw logs with four sampling streams. This tests whether the results depend on the 2% sample.
+
+```bash
+python scripts/data/lanl_rebuild_E10_original.py --ijacsa-repo <clone of crossdataset-insider-threat> --lanl-dir <folder with auth.txt.gz and redteam.txt.gz>
+python scripts/data/repair_lanl_hourstd.py --ijacsa-repo <clone>
+```
+
+- `lanl_rebuild_E10_original.py` is the rebuild script.
+- `lanl_rebuild_E10.py` does the same work but can fall back to pickle files. It was needed only on a machine where a security policy blocked `pyarrow`. Use the original wherever `pyarrow` works.
+- `repair_lanl_hourstd.py` fixes an integer overflow in `hour_std` that appears only on Windows.
+- The rebuild reads about one billion raw rows and takes 1–2 hours.
+
+## Setup
+
+Python 3.13.16 on Linux x86_64. The exact package versions are in `requirements.txt`: numpy 2.5.3, pandas 3.0.5, pyarrow 26.0.0, scikit-learn 1.9.1, scipy 1.18.1, torch 2.14.1, xgboost 3.4.1, matplotlib 3.11.2, openpyxl 3.1.5.
 
 ```bash
 git clone https://github.com/alriyami7777-alt/fed-itd-heterogeneous.git
 cd fed-itd-heterogeneous
 pip install -r requirements.txt
+export FITD_ROOT=/path/to/workdir   # must contain data/; results/ is written there
 ```
 
-## Configuration
+If `FITD_ROOT` is not set, the repository folder is used. No other path is hard-coded. `FITD_THREADS` sets the number of torch threads (default 2).
 
-Copy the example configuration and edit the paths:
+## Reproduce
+
+Run every command from the repository root.
+
+**Main study, 5 seeds (as first run):**
 
 ```bash
-cp config/paths.example.yaml config/paths.yaml
+python scripts/run_e1_e2.py mlp_local; python scripts/run_e1_e2.py mlp_pooled
+python scripts/run_e1_e2.py rf_local;  python scripts/run_e1_e2.py rf_pooled
+python scripts/run_e1_e2.py xgb_local; python scripts/run_e1_e2.py xgb_pooled
+python src/similarity.py
+for j in fedavg_size loo zeroshot_mlp fedavg_equal fedper fedper_in fedprox_tune fedprox finetune; do python scripts/run_fl.py $j; done
+python scripts/summarise.py; python scripts/summarise_fl.py; python scripts/make_figures.py
 ```
 
-`config/paths.yaml` is ignored by Git.
+**Main study, 20 seeds (the results in the paper):**
 
-## Reproducing the results
-
-| Paper table/figure | Script | Output file |
-|---|---|---|
-| To be added | To be added | To be added |
-
-## Repository structure
-
+```bash
+python scripts/run_review.py mlp_local 0-19
+python scripts/run_review.py sanity 0-4
+for j in fedavg_size fedavg_equal fedper_in finetune; do python scripts/run_review.py $j 0-19; done
+python scripts/run_confirm.py c1 5-19
+python scripts/run_confirm.py c2 5-19
+python scripts/run_review.py fednova_sanity 0-0
+for j in fednova_size fednova_equal; do python scripts/run_review.py $j 0-19; done
+for j in fedavg_size fedavg_equal fedper_in finetune fedprox fedper; do python scripts/run_review.py c2c4_$j 0-19; done
+for j in fednova_sgd_size fednova_sgd_equal; do python scripts/run_review.py $j 0-4; done
+for j in fedprox fedper mlp_pooled loo zeroshot_mlp; do python scripts/run_review.py $j 0-19; done
 ```
-fed-itd-heterogeneous/
-├── README.md
-├── LICENSE
-├── CITATION.cff
-├── requirements.txt
-├── .gitignore
-├── config/
-│   └── paths.example.yaml
-├── data/
-│   └── README.md
-├── src/
-│   ├── harmonise/
-│   ├── splits/
-│   ├── models/
-│   ├── federated/
-│   ├── evaluation/
-│   └── similarity/
-├── scripts/
-│   └── README.md
-├── results/
-│   └── README.md
-└── docs/
-    └── protocol.md
+
+`run_review.py` saves per-row predictions under `results/preds/`. These are needed by `review_metrics.py` and `spedia_cluster_boot.py`, and are not committed. Each job skips seeds that are already done, so you can restart a job after an interruption.
+
+**Statistics:**
+
+```bash
+python scripts/check_reproduction.py          # seeds 0-4 reproduce the 5-seed scores; sanity runs equal training alone
+python scripts/review_stats.py --seeds 0-19   # paired bootstrap, paired t-test, Holm correction
+python scripts/review_metrics.py              # ROC-AUC, recall at 1%, thresholded P/R/F1, worst client
+python scripts/spedia_cluster_boot.py         # user-level bootstrap for SPEDIA
+python scripts/c3_analysis.py --source review --seeds 0-19
+python scripts/summarise_confirm.py
 ```
+
+**Exploratory, outside the protocol:** `scripts/run_extra.py`, `src/gating.py` and `scripts/summarise_extra.py`.
+
+**Run times.** These are measured on 2 CPU cores with 2 torch threads, per seed:
+
+| Job | Time per seed |
+|---|---|
+| Local MLP (`mlp_local`) | about 4 min |
+| Zero-shot transfer (`zeroshot_mlp`) | about 13 min |
+| Leave-one-out (`loo`) | about 15 min |
+| Confirmatory C-1 (`run_confirm.py c1`) | about 40 min |
+
+Every output CSV records its own wall-clock time in a `wall_s` column. **Run one job at a time.** Two training jobs sharing 2 cores slowed each other badly.
 
 ## Results
 
-To be added.
+Summary tables only. Per-row predictions and per-seed raw files are not included.
+
+| File | What it holds |
+|---|---|
+| `results/splits_record.csv` | Split cut-off dates, row counts and positives per organisation (per seed for LANL) |
+| `results/e1e2_{mlp,rf,xgb}_{local,pooled}.csv` | Per-seed PR-AUC and lift for local and pooled training: MLP, random forest and XGBoost, 5 seeds |
+| `results/c3_similarity.csv` | Similarity between organisations before training: prevalence ratio, Jensen–Shannon distance, Jaccard overlap |
+| `results/c3_points.csv` | One row per scored member of each two-member federation: similarity and gain |
+| `results/c3_spearman.csv` | Spearman correlation between similarity and gain, with exact permutation p-values (5 seeds) |
+| `results/fedprox_mu.json` | FedProx μ chosen on validation |
+| `results/review/stats_review_s0-19.csv` | Each federated method vs training alone, per member: mean difference, bootstrap and t intervals, Holm-adjusted p-values (20 seeds) |
+| `results/review/stats_counts_review_s0-19.csv` | Number of significant gains and losses per method under each test |
+| `results/review/loo_summary_s0-19.csv` | Leave-one-out: PR-AUC on the unseen organisation vs the best single source |
+| `results/review/fednova_sgd_s0-4.csv` | FedNova with plain local SGD vs training alone and vs FedNova with Adam (5 seeds) |
+| `results/review/metrics_by_cell.csv` | Secondary metrics per method, federation and member: ROC-AUC, recall at 1%, precision, recall, F1 |
+| `results/review/spedia_cluster_boot.csv` | SPEDIA user-level bootstrap intervals for PR-AUC and for the difference from training alone |
+| `results/review/c3_spearman_review_s0-19.csv` | Spearman correlation between similarity and gain (20 seeds) |
+
+## Test plan
+
+The test plan was frozen on 13 October 2026, before any data was processed. It is in [`docs/protocol.md`](docs/protocol.md). Every later change is dated in its change log (Section 10), with the reason for it.
+
+## Cite
+
+Use **"Cite this repository"** on the GitHub page (from `CITATION.cff`). Authors: Qasim Alriyami, Mohd Murtadha Mohamad and Yusuf Idris Muhammad.
 
 ## Related work
 
-- Cross-dataset study (IJACSA 2026): [crossdataset-insider-threat](https://github.com/alriyami7777-alt/crossdataset-insider-threat)
+- Cross-dataset study (IJACSA 2026): [crossdataset-insider-threat](https://github.com/alriyami7777-alt/crossdataset-insider-threat). Its pipeline builds the user-day tables used here.
 
 ## Licence and contact
 
-Code is released under the MIT Licence (see [`LICENSE`](LICENSE)). The datasets keep their own licences.
+The code is released under the MIT Licence (see [`LICENSE`](LICENSE)). The datasets keep their own licences.
 
-Corresponding author: Qasim Alriyami, Universiti Teknologi Malaysia — mohamedmuhanna@graduate.utm.my
+Corresponding author: Qasim Alriyami, Universiti Teknologi Malaysia.

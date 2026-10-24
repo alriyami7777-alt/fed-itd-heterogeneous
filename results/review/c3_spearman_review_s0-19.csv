@@ -1,0 +1,13 @@
+subset,measure,n,spearman_rho,perm_p,permutations
+"5 pairs, all 10 points",Jaccard overlap of observed actions,10,0.29541957835039856,0.4195238095238095,3628800
+"5 pairs, all 10 points",Jensen-Shannon distance,10,-0.3938927711338647,0.2716225749559083,3628800
+"5 pairs, all 10 points",prevalence ratio,10,-0.29541957835039856,0.4195238095238095,3628800
+"5 pairs, CERT-scored (5 points)",Jaccard overlap of observed actions,5,0.6155870112510925,0.3,120
+"5 pairs, CERT-scored (5 points)",Jensen-Shannon distance,5,-0.30779350562554625,0.6,120
+"5 pairs, CERT-scored (5 points)",prevalence ratio,5,-0.20519567041703085,0.7333333333333333,120
+"6 pairs, all 12 points",Jaccard overlap of observed actions,12,0.12721562869323952,0.704003,"1,000,000 random (seed 20261017)"
+"6 pairs, all 12 points",Jensen-Shannon distance,12,-0.19789097796726146,0.546421,"1,000,000 random (seed 20261017)"
+"6 pairs, all 12 points",prevalence ratio,12,-0.3533767463701098,0.264938,"1,000,000 random (seed 20261017)"
+"6 pairs, CERT-scored (6 points)",Jaccard overlap of observed actions,6,0.550782483869826,0.2722222222222222,720
+"6 pairs, CERT-scored (6 points)",Jensen-Shannon distance,6,-0.3188740696088466,0.5444444444444444,720
+"6 pairs, CERT-scored (6 points)",prevalence ratio,6,-0.3188740696088466,0.5444444444444444,720
