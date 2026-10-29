@@ -6,13 +6,28 @@ Code, test plan and summary results for the paper. No data is included.
 
 ## What it does
 
-The study treats public insider-threat datasets as separate organisations: CERT r4.2 and CERT r5.2 (synthetic), SPEDIA v1.0 (attacks by people, simulated normal activity) and LANL (real enterprise authentication logs with red-team activity). Each dataset is turned into the same user-day table with 42 features.
+The study treats five public insider-threat datasets as five separate organisations (members):
 
-One small neural network (an MLP) is trained in three ways:
+- **CERT r4.2** and **CERT r5.2** (synthetic);
+- **SPEDIA v1.0** (attacks by people, simulated normal activity);
+- **LANL** (real enterprise authentication logs with red-team activity);
+- **TWOS** (a logon-only table, split by day; available from its authors only).
 
-- **alone**, on each organisation's own data;
-- **pooled**, on all organisations' data together (no privacy, as a reference);
-- **in federations**, with FedAvg (size or equal weights), FedProx, FedPer, a private first layer, FedAvg with local fine-tuning, and FedNova.
+Each dataset is turned into the same user-day table with 42 features. One small neural network (an MLP) is trained alone on each member's own data, pooled on all members' data (no privacy, as a reference), and in federations with these rules:
+
+- FedAvg, with size or equal weights;
+- FedProx (μ = 0.001);
+- FedPer;
+- a private first layer;
+- FedAvg with local fine-tuning;
+- FedNova, with size or equal weights.
+
+Added after review:
+
+- plain-SGD FedAvg and FedNova (E-1);
+- a private output head, and the last two layers private (E-3);
+- Ditto (λ = 0.1, E-3);
+- label-scarce training compared with fine-tuning (E-4).
 
 For each member of each federation, the paper reports the gain or loss in PR-AUC against training alone, over 20 runs (seeds 0–19). Leave-one-out and single-source transfer to an unseen organisation are also run.
 
@@ -25,13 +40,13 @@ Get each dataset from its provider and accept its terms.
 | CERT r4.2 / r5.2 | https://kilthub.cmu.edu/articles/dataset/Insider_Threat_Test_Dataset/12841247 | See provider |
 | SPEDIA v1.0 | https://doi.org/10.5281/zenodo.15495572 (collection tools: https://github.com/UPM-RSTI/SPEDIA-Dataset) | CC BY 4.0 |
 | LANL | https://doi.org/10.17021/1179829 (if the DOI page does not load: https://csr.lanl.gov/data/cyber1/) | CC0 |
-| TWOS (post-review test E-11 only) | From its authors, under a release agreement (Harilal et al., 2017) | Not redistributable |
+| TWOS (fifth member, E-11) | From its authors, under a release agreement (Harilal et al., 2017) | Not redistributable |
 
 TWOS may not be redistributed, so request it from its authors yourself. This repository holds no TWOS file of any kind: only the code that builds the table and group-level results.
 
 ## Building the user-day tables
 
-The four user-day tables come from the pipeline of our earlier cross-dataset study: [crossdataset-insider-threat](https://github.com/alriyami7777-alt/crossdataset-insider-threat). They are built by `scripts/strict_camera_ready_2026_09_15.py` in that repository (stages `build-c2` and `build-rest`) and copied unchanged to `$FITD_ROOT/data/` as `{cert42,cert52,spedia,lanl}_user_day_dev.parquet`.
+The user-day tables for CERT r4.2, CERT r5.2, SPEDIA and LANL come from the pipeline of our earlier cross-dataset study: [crossdataset-insider-threat](https://github.com/alriyami7777-alt/crossdataset-insider-threat). They are built by `scripts/strict_camera_ready_2026_09_15.py` in that repository (stages `build-c2` and `build-rest`) and copied unchanged to `$FITD_ROOT/data/` as `{cert42,cert52,spedia,lanl}_user_day_dev.parquet`.
 
 Check your copies against these SHA-256 hashes:
 
@@ -42,7 +57,7 @@ Check your copies against these SHA-256 hashes:
 | spedia | `5d1727eb7461e1c5de117bee613d315d1999711d61a9402111161334c6e523d3` |
 | lanl | `e78d635a029aa8b7380edbb1e65b56ca9249ba7d7148f29ac16065b5d5c93d9b` |
 
-Each table holds 42 features over 16 actions, plus `user`, `day` and `label`.
+Each table holds 42 features over 16 actions, plus `user`, `day` and `label`. The TWOS table is built separately (see *Other tables for the post-review tests* below).
 
 **LANL rebuild (E-10).** `scripts/data/` rebuilds LANL from the raw logs with four sampling streams. This tests whether the results depend on the 2% sample.
 
