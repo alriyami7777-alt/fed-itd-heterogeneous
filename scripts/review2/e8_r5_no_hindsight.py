@@ -1,4 +1,4 @@
-"""E-8 (doc 31): R5 without hindsight, and a real ensemble. No training: uses the saved zero-shot (R5) and
+"""E-8 (post-review plan): R5 without hindsight, and a real ensemble. No training: uses the saved zero-shot (R5) and
 leave-one-out (R6) predictions of the 20-seed review runs (results/preds/zeroshot_mlp, results/preds/loo).
 
 For each target t and seed:

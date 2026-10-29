@@ -2,11 +2,11 @@ import os as _os, sys as _sys  # repository layout: modules live in ../../src an
 _HERE = _os.path.dirname(_os.path.abspath(__file__))
 _sys.path[:0] = [_os.path.join(_HERE, "..", "..", "src"), _os.path.join(_HERE, "..")]
 from config import ROOT as _ROOT
-_os.chdir(_ROOT)  # relative paths below (results/, data/) are relative to FITD_ROOT
+_os.chdir(_ROOT)  # relative paths below (results/) are relative to FITD_ROOT
 import pandas as pd, numpy as np
 R="results/review2/"
-L=["# 33 — Review-2 exploratory items (5 seeds): E-2, E-5, E-6, E-7, E-8, E-9, E-10 and the E-11 extras (23 Oct 2026)","",
-"For the writing team. Every number below is read from the result files by code (`make_doc33.py`); nothing is typed by hand. All items are **exploratory, 5 seeds (0–4)**, except E-8 (20 seeds, from the saved main-run predictions). Effects are member − its own matched baseline; 95% CI = paired bootstrap over seeds (exact 3,125 resamples for n = 5); 'gain'/'loss' = CI excludes 0; Holm within the item's family. With 5 seeds few effects survive Holm — that is expected and stated, not hidden.",""]
+L=["# Review-2 exploratory items (5 seeds): E-2, E-5, E-6, E-7, E-8, E-9, E-10 and the E-11 extras (23 Oct 2026)","",
+"Every number below is read from the result files by code (`summarise_exploratory.py`); nothing is typed by hand. All items are **exploratory, 5 seeds (0–4)**, except E-8 (20 seeds, from the saved main-run predictions). Effects are member − its own matched baseline; 95% CI = paired bootstrap over seeds (exact 3,125 resamples for n = 5); 'gain'/'loss' = CI excludes 0; Holm within the item's family. With 5 seeds few effects survive Holm — that is expected and stated, not hidden.",""]
 f=lambda x: f"{x:+.3f}"
 def v(r): return "gain" if r=="gain" else ("loss" if r=="loss" else "n.c.d.")
 # E-2
@@ -68,7 +68,7 @@ L+=["",f"Counts over the three new builds: {(E.verdict=='gain').sum()} gains, {(
 "**Plain reading.** 5% sampling recovers only 3 more of the 176 red-team user-days but gives about 2.5× more events per positive day; the two new 2% draws already give about twice the protocol's LANL PR-AUC, so the protocol LANL score sits at the low end of what a 2% sample gives. Federation never helps LANL in any build, and the other members' losses do not depend on the LANL build.",""]
 # E-11 extras
 O=pd.read_csv(R+"e11_twos_cells.csv"); C=pd.read_csv(R+"e11_twos_seed_counts.csv")
-L+=["## E-11 TWOS extras (seeds 0–4; full detail in doc 32)","","TWOS test set: 46 user-days, 6 positive user-days from 6 positive users (24 users); top-10% = 5 user-days.","","| Group | Rule | TWOS PR-AUC | Δ vs local MLP [user-bootstrap CI] | Positives in top 5 | Seeds above local MLP / XGBoost |","|---|---|---|---|---|---|"]
+L+=["## E-11 TWOS extras (seeds 0–4)","","TWOS test set: 46 user-days, 6 positive user-days from 6 positive users (24 users); top-10% = 5 user-days.","","| Group | Rule | TWOS PR-AUC | Δ vs local MLP [user-bootstrap CI] | Positives in top 5 | Seeds above local MLP / XGBoost |","|---|---|---|---|---|---|"]
 name={"fedavg_size":"FedAvg size","fedavg_equal":"FedAvg equal","fedper_in":"private first layer"}
 for _,r in O[O.regime.isin(name)].iterrows():
     c=C[(C.group==r.federation)&(C.rule==r.regime)].iloc[0]
@@ -77,5 +77,5 @@ loc=O[O.regime.isin(["R0_local","R0_RF","R0_XGB"])]
 L+=["","Local references: "+"; ".join(f"{r.regime} {r.pr_auc:.3f} (top-5 hits {r.top10pct_hits_mean:.1f})" for _,r in loc.iterrows())+".","",
 "**Plain reading.** TWOS gains clearly from federation with all five members, with SPEDIA and with LANL (user-bootstrap intervals exclude 0 for 9 of 15 cells; above the local MLP and XGBoost on 4–5 of 5 seeds in those groups). Pairs with CERT help less. Caveats: 6 test positives; validation holds only traitors and test only masquerade victims.",""]
 L+=["## Files","`results/review2/`: stats_e2.csv, e2_member_descriptors.csv, stats_e5.csv, stats_e6.csv, e7_summary.csv, e8_summary.csv, e8_per_seed.csv, e9_summary.csv, e10_builds.csv, e10_effects.csv, e11_twos_cells.csv, e11_twos_seed_counts.csv, e11_twos_per_seed.csv, stats_e11.csv.",""]
-open("docs/33_Review2_exploratory_5seed_results_2026-10-23.md","w").write("\n".join(L)+"\n")
+open("results/review2/summary_exploratory.md","w").write("\n".join(L)+"\n")
 print(len(L))

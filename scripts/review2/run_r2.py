@@ -1,4 +1,4 @@
-"""Review-2 runs (doc 31, CONSOLIDATED experiment plan v10, 20 Oct 2026; protocol change log E-1 ... E-12).
+"""Review-2 runs (post-review plan v10, 20 Oct 2026; protocol change log E-1 ... E-12).
 Designs are fixed here before running (and logged in the change log first). Defaults as the frozen protocol:
 MLP 42-128-64-1, Adam 1e-3, batch 256, class-weighted BCE, T = 100, patience 10, best round by mean validation
 PR-AUC over members, splits and scalers as in fitd_common.py. Every training call reseeds itself.
@@ -596,7 +596,7 @@ def twos_frame():
 
 
 def twos_split(d, split, seed):
-    """'day' (pre-specified, doc 31): train Mon 20-Tue 21, validation Wed 22, test Thu 23-Fri 24 March 2017.
+    """'day' (pre-specified in the post-review plan): train Mon 20-Tue 21, validation Wed 22, test Thu 23-Fri 24 March 2017.
     'user' (sensitivity): user-disjoint as LANL (70/30 of users, then 15% of training users for validation,
     stratified by having a positive day, redrawn per seed)."""
     from fitd_common import DAY, split_user_day_frame

@@ -144,10 +144,12 @@ python scripts/review2/run_r2.py e1_ref 0            # FedNova reference check o
 # E-11: TWOS as a fifth member
 for j in e11_main e11_user e11_trees; do python scripts/review2/run_r2.py $j 0-4; done
 python scripts/review2/run_r2.py e11_main 0-19
-python scripts/review2/e11_extra.py 0-4
+python scripts/review2/e11_extra.py 0-19
 # E-3: matched personalisation (FedPer-H, FedPer-2, Ditto)
 python scripts/review2/run_r2.py e3_ditto_sel 0
 for j in e3_fedperh e3_fedper2 e3_ditto; do python scripts/review2/run_r2.py $j 0-19; done
+python scripts/review2/run_r2.py e3_dittofed_sel 0   # sensitivity: Ditto lambda chosen per group
+python scripts/review2/run_r2.py e3_dittofed 0-4
 # E-6 label variants, E-5 controlled triples, E-7 trees on training rows, E-9 time cuts, E-10 LANL rebuilds
 for j in e6_ii_desc e6_iii_sev7_or_desc; do python scripts/review2/run_r2.py $j 0-4; done
 for j in e5_fedavg_size e5_fedavg_equal e5_fedprox e5_fedper e5_fedper_in e5_finetune e5_fednova_size e5_fednova_equal; do python scripts/review2/run_r2.py $j 0-4; done
@@ -162,8 +164,11 @@ python scripts/review2/run_r2.py e4 5-19
 python scripts/review2/r2_stats.py
 python scripts/review2/e8_r5_no_hindsight.py
 python scripts/review2/e1_convergence_plots.py
-python scripts/review2/make_doc33.py
-python scripts/review2/make_doc37.py             # E-4 summary tables
+python scripts/review2/summarise_exploratory.py    # 5-seed exploratory items (E-2, E-5 to E-10)
+python scripts/review2/summarise_e4.py             # E-4 summary tables
+python scripts/review2/summarise_e11.py            # E-11 summary tables (group level)
+python scripts/review2/summarise_e3.py             # E-3: FedPer-H and FedPer-2 vs the private first layer and FedPer
+python scripts/review2/summarise_e3_ditto.py       # E-3: Ditto vs the private first layer
 ```
 
 `e2_C2` and `e2_S1C2` also need `data/derived/cert52_user_day_cov_logon_rebuild.parquet`, built by `scripts/data/rebuild_c52.py` (see above).
@@ -206,7 +211,11 @@ Summary tables only. Per-row predictions and per-seed raw files are not included
 | `results/review2/stats_e2.csv` | E-2: controlled federation within CERT r5.2, per variant and member |
 | `results/review2/stats_e5.csv` | E-5: controlled three-member groups under the six planned methods, plus FedNova (exploratory) |
 | `results/review2/stats_e6.csv` | E-6: SPEDIA label variants, federated vs local |
-| `results/review2/stats_e11.csv` | E-11: TWOS as a fifth member, at group level only (PR-AUC differences and intervals per method and group) |
+| `results/review2/stats_e11.csv` | E-11: TWOS as a fifth member, at group level only: PR-AUC differences and intervals per method and group (20 seeds), the pooled, leave-one-out and zero-shot references (20 seeds), and the user-split sensitivity check (5 seeds) |
+| `results/review2/stats_e3.csv` | E-3: private output head (FedPer-H), last two layers private (FedPer-2) and Ditto (λ = 0.1) vs each member's local MLP (20 seeds); Ditto with λ chosen per group as a sensitivity check (5 seeds) |
+| `results/review2/e3_interim_vs_local.csv` | E-3: FedPer, private first layer, FedPer-H and FedPer-2 vs local, per group and member, with Holm over the whole table (20 seeds) |
+| `results/review2/e3_interim_head_vs_input.csv` | E-3: FedPer-H vs the private first layer, per group (20 seeds) |
+| `results/review2/e3_ditto_vs_input.csv` | E-3: Ditto vs the private first layer, per group (20 seeds) |
 | `results/review2/stats_e12.csv` | E-12: extra SPEDIA steps per round with the main checkpoint rule, vs usual local training, vs the C-1 checkpoint rule, and SPEDIA vs the same steps alone (seeds 5–19) |
 | `results/review2/e7_summary.csv` | E-7: random forest and XGBoost on training rows only vs training plus validation, and vs the MLP |
 | `results/review2/e8_summary.csv` | E-8: transfer to an unseen organisation without hindsight (selected source, ensemble) vs leave-one-out, the best single source in hindsight and the average source |
@@ -216,7 +225,7 @@ Summary tables only. Per-row predictions and per-seed raw files are not included
 | `results/review2/stats_e4.csv` | E-4: CERT r4.2 with 1–25% of its labels: FedAvg with the full CERT r5.2 (size, equal) vs the best of local training, the CERT r5.2 model as is, and that model fine-tuned; with the same label budget for validation and with the full validation set (seeds 5–19) |
 | `results/review2/e4_per_seed_winner.csv` | E-4: test PR-AUC of every option on each seed, and which option won |
 
-The E-1 convergence plots (validation PR-AUC per round, seeds 0–4) are made by `scripts/review2/e1_convergence_plots.py`. E-3 results will be added when that run finishes.
+The E-1 convergence plots (validation PR-AUC per round, seeds 0–4) are made by `scripts/review2/e1_convergence_plots.py`. Each `summarise_*.py` script also writes a readable Markdown summary next to these files.
 
 ## Test plan
 

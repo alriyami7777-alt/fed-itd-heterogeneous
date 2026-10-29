@@ -1,4 +1,4 @@
-"""Statistics for the review-2 items (doc 31 §0.3): effect = new − its own matched baseline, paired by seed;
+"""Statistics for the review-2 items (post-review plan, section 0.3): effect = new − its own matched baseline, paired by seed;
 10,000-resample paired bootstrap (seed 20261014; exact 3,125 enumeration when n = 5, as review_stats.boot_ci);
 paired t; Holm within the item's family. Verdicts are descriptive.
 Usage: python r2_stats.py [item ...]   (items: e1 e12 e4 e2 e3 e5 e6 e11; default: all that have results)

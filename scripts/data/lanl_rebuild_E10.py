@@ -3,7 +3,7 @@ Same as lanl_rebuild_E10_original.py, with a pickle fallback. It was needed only
 blocked pyarrow; use the original wherever pyarrow works. Reads <lanl-dir>/auth.txt.gz once (1-2 h); writes 4 files
 + lanl_rebuild_report.json to --out.
 
-E-10 LANL sampling rebuild (doc 31). One pass over the raw auth.txt.gz, four label-agnostic sampling streams,
+E-10 LANL sampling rebuild (post-review plan; change log E-10 in docs/protocol.md). One pass over the raw auth.txt.gz, four label-agnostic sampling streams,
 mirroring IJACSA load_lanl (strict uniform keep rule) + user_day_features(deviation=True):
   f02_s7 : 2%, RNG seed 7  -> must reproduce the strict cache (parity check)
   f05_s7 : 5%, RNG seed 7  (same uniform draws as f02_s7, threshold 0.05: a superset of the 2% sample)
