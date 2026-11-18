@@ -1,0 +1,7 @@
+,pos_tr,pos_tr,pos_tr,pos_va,pos_va,pos_va,pos_te,pos_te,pos_te,posusers_tr,posusers_tr,posusers_tr,posusers_va,posusers_va,posusers_va,posusers_te,posusers_te,posusers_te
+,min,mean,max,min,mean,max,min,mean,max,min,mean,max,min,mean,max,min,mean,max
+variant,,,,,,,,,,,,,,,,,,
+L1,64,129.8,184,3,42.8,77,9,60.6,114,6,8.8,11,1,3.1,5,2,5.8,10
+L2,0,12.6,35,0,5.8,15,17,53.7,85,0,1.2,3,0,1.4,3,2,5.2,8
+L3,64,129.8,184,3,42.8,77,9,60.6,114,10,10.9,11,2,4.6,5,5,10.5,12
+R,71,144.4,195,15,49.7,85,64,116.0,159,11,11.0,11,5,5.0,5,12,12.0,12

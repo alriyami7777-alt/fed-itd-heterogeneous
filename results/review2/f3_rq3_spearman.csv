@@ -1,0 +1,31 @@
+subset,measure,n,spearman_rho,perm_p,permutations
+5 pairs (10 points),transfer T(partner -> member),10,-0.0303030303030303,0.9459700176366843,3628800
+5 pairs (10 points),"transfer, mean of both directions",10,0.3200378765462651,0.37793650793650796,3628800
+5 pairs (10 points),Jaccard overlap of observed actions,10,0.29541957835039856,0.4195238095238095,3628800
+5 pairs (10 points),Jensen-Shannon distance,10,-0.3938927711338647,0.2716225749559083,3628800
+5 pairs (10 points),prevalence ratio,10,-0.29541957835039856,0.4195238095238095,3628800
+6 pairs (12 points),transfer T(partner -> member),12,0.013986013986013986,0.974037,"1,000,000 random (seed 20261017)"
+6 pairs (12 points),"transfer, mean of both directions",12,0.16962083825765267,0.607596,"1,000,000 random (seed 20261017)"
+6 pairs (12 points),Jaccard overlap of observed actions,12,0.12721562869323952,0.704003,"1,000,000 random (seed 20261017)"
+6 pairs (12 points),Jensen-Shannon distance,12,-0.19789097796726146,0.546421,"1,000,000 random (seed 20261017)"
+6 pairs (12 points),prevalence ratio,12,-0.3533767463701098,0.264938,"1,000,000 random (seed 20261017)"
+"5 pairs, CERT r4.2 left out (4 points)",transfer T(partner -> member),4,-0.6000000000000001,0.4166666666666667,24
+"5 pairs, CERT r4.2 left out (4 points)","transfer, mean of both directions",4,0.4472135954999579,0.6666666666666666,24
+"5 pairs, CERT r4.2 left out (4 points)",Jaccard overlap of observed actions,4,0.4472135954999579,0.6666666666666666,24
+"5 pairs, CERT r4.2 left out (4 points)",Jensen-Shannon distance,4,-0.4472135954999579,0.6666666666666666,24
+"5 pairs, CERT r4.2 left out (4 points)",prevalence ratio,4,0.4472135954999579,0.6666666666666666,24
+"5 pairs, CERT r5.2 left out (6 points)",transfer T(partner -> member),6,-0.3714285714285715,0.49722222222222223,720
+"5 pairs, CERT r5.2 left out (6 points)","transfer, mean of both directions",6,0.0,1.0,720
+"5 pairs, CERT r5.2 left out (6 points)",Jaccard overlap of observed actions,6,0.0,1.0,720
+"5 pairs, CERT r5.2 left out (6 points)",Jensen-Shannon distance,6,0.0,1.0,720
+"5 pairs, CERT r5.2 left out (6 points)",prevalence ratio,6,0.0,1.0,720
+"5 pairs, SPEDIA left out (4 points)",transfer T(partner -> member),4,0.7999999999999999,0.3333333333333333,24
+"5 pairs, SPEDIA left out (4 points)","transfer, mean of both directions",4,0.4472135954999579,0.6666666666666666,24
+"5 pairs, SPEDIA left out (4 points)",Jaccard overlap of observed actions,4,0.4472135954999579,0.6666666666666666,24
+"5 pairs, SPEDIA left out (4 points)",Jensen-Shannon distance,4,-0.4472135954999579,0.6666666666666666,24
+"5 pairs, SPEDIA left out (4 points)",prevalence ratio,4,-0.4472135954999579,0.6666666666666666,24
+"5 pairs, LANL left out (6 points)",transfer T(partner -> member),6,0.028571428571428574,1.0,720
+"5 pairs, LANL left out (6 points)","transfer, mean of both directions",6,0.5976143046671969,0.26666666666666666,720
+"5 pairs, LANL left out (6 points)",Jaccard overlap of observed actions,6,0.4780914437337575,0.4,720
+"5 pairs, LANL left out (6 points)",Jensen-Shannon distance,6,-0.4780914437337575,0.4,720
+"5 pairs, LANL left out (6 points)",prevalence ratio,6,-0.4780914437337575,0.4,720

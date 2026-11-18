@@ -1,0 +1,90 @@
+section,item,new,old
+"Fig. 6 (17 planned cases per rule, two-level CI)",FedAvg (size): gain,0,1
+"Fig. 6 (17 planned cases per rule, two-level CI)",FedAvg (size): no clear difference,5,4
+"Fig. 6 (17 planned cases per rule, two-level CI)",FedAvg (size): loss,12,12
+"Fig. 6 (17 planned cases per rule, two-level CI)",FedAvg (equal): gain,0,3
+"Fig. 6 (17 planned cases per rule, two-level CI)",FedAvg (equal): no clear difference,8,4
+"Fig. 6 (17 planned cases per rule, two-level CI)",FedAvg (equal): loss,9,10
+"Fig. 6 (17 planned cases per rule, two-level CI)",FedProx (μ=0.001): gain,0,2
+"Fig. 6 (17 planned cases per rule, two-level CI)",FedProx (μ=0.001): no clear difference,9,6
+"Fig. 6 (17 planned cases per rule, two-level CI)",FedProx (μ=0.001): loss,8,9
+"Fig. 6 (17 planned cases per rule, two-level CI)",FedPer (local output layer): gain,0,1
+"Fig. 6 (17 planned cases per rule, two-level CI)",FedPer (local output layer): no clear difference,9,6
+"Fig. 6 (17 planned cases per rule, two-level CI)",FedPer (local output layer): loss,8,10
+"Fig. 6 (17 planned cases per rule, two-level CI)",Private first layer: gain,0,2
+"Fig. 6 (17 planned cases per rule, two-level CI)",Private first layer: no clear difference,13,6
+"Fig. 6 (17 planned cases per rule, two-level CI)",Private first layer: loss,4,9
+"Fig. 6 (17 planned cases per rule, two-level CI)",FedAvg + fine-tune: gain,0,4
+"Fig. 6 (17 planned cases per rule, two-level CI)",FedAvg + fine-tune: no clear difference,9,3
+"Fig. 6 (17 planned cases per rule, two-level CI)",FedAvg + fine-tune: loss,8,10
+"Fig. 6 (17 planned cases per rule, two-level CI)",FedNova (size): gain,0,2
+"Fig. 6 (17 planned cases per rule, two-level CI)",FedNova (size): no clear difference,7,4
+"Fig. 6 (17 planned cases per rule, two-level CI)",FedNova (size): loss,10,11
+"Fig. 6 (17 planned cases per rule, two-level CI)",FedNova (equal): gain,1,2
+"Fig. 6 (17 planned cases per rule, two-level CI)",FedNova (equal): no clear difference,4,2
+"Fig. 6 (17 planned cases per rule, two-level CI)",FedNova (equal): loss,12,13
+Abstract,FedAvg (size): clear losses of 17,12,12
+Abstract,FedAvg (size): losses after Holm (a),7,8
+Sec. 4.2.1 (102 planned),clear gains (two-level CI),0,13
+Sec. 4.2.1 (102 planned),  of which LANL,0,8
+Sec. 4.2.1 (102 planned),  of which CERT r4.2 with CERT r5.2,0,5
+Sec. 4.2.1 (102 planned),clear losses (two-level CI),49,
+Sec. 4.2.1 (102 planned),losses after Holm (a),30,37
+Sec. 4.2.1 (102 planned),gains after Holm (a),0,3
+All 156 cases,clear gains / losses (two-level CI),1 / 77,
+All 156 cases,gains / losses after Holm (b),0 / 46,
+"FedNova (Adam) family, 38",clear gains / losses (two-level CI),1 / 24,
+"FedNova (Adam) family, 38",gains / losses after Holm (c),0 / 20,
+"Sec. 4.2.3 (C1+C2, six planned rules)",CERT r4.2: clear gain (two-level CI) of 6,0,4
+"Sec. 4.2.3 (C1+C2, six planned rules)",CERT r4.2: gain after Holm (a) of 6,0,
+"Sec. 4.2.3 (C1+C2, six planned rules)",CERT r5.2: clear loss (two-level CI) of 6,3,4
+"Sec. 4.2.3 (C1+C2, six planned rules)",CERT r5.2: loss after Holm (a) of 6,0,
+e1: E-1 vs SGD local,fedavg_size − local(SGD),0 gain / 11 loss of 19 (Holm: 0 / 9),0 / 14 (Holm 0 / 10)
+e1: E-1 vs SGD local,fedavg_equal − local(SGD),0 gain / 12 loss of 19 (Holm: 0 / 8),2 / 13 (Holm 0 / 9)
+e1: E-1 vs SGD local,fednova_size − local(SGD),0 gain / 13 loss of 19 (Holm: 0 / 6),0 / 14 (Holm 0 / 7)
+e1: E-1 vs SGD local,fednova_equal − local(SGD),0 gain / 8 loss of 19 (Holm: 0 / 5),7 / 8 (Holm 4 / 7)
+e1: E-1 FedNova − FedAvg (same solver),fednova_size − fedavg_size,3 gain / 3 loss of 19 (Holm: 1 / 0),4 / 6 (Holm 2 / 2)
+e1: E-1 FedNova − FedAvg (same solver),fednova_equal − fedavg_equal,7 gain / 2 loss of 19 (Holm: 5 / 1),7 / 2 (Holm 6 / 1)
+e1: E-1 fixed-step vs SGD local,fedavg_size S=100 − local(SGD),0 gain / 3 loss of 4 (Holm: 0 / 3),0 / 3 (Holm 0 / 3)
+e1: E-1 fixed-step − fixed-epoch,fedavg_size S=100 − fedavg_size one pass,0 gain / 2 loss of 4 (Holm: 0 / 2),0 / 2 (Holm 0 / 2)
+e1: E-1 fixed-step vs SGD local,fedavg_equal S=100 − local(SGD),0 gain / 2 loss of 4 (Holm: 0 / 2),1 / 2 (Holm 1 / 2)
+e1: E-1 fixed-step − fixed-epoch,fedavg_equal S=100 − fedavg_equal one pass,1 gain / 3 loss of 4 (Holm: 1 / 2),1 / 3 (Holm 1 / 3)
+e1: E-1 fixed-step vs SGD local,fednova_size S=100 − local(SGD),0 gain / 4 loss of 4 (Holm: 0 / 4),0 / 4 (Holm 0 / 4)
+e1: E-1 fixed-step − fixed-epoch,fednova_size S=100 − fednova_size one pass,0 gain / 2 loss of 4 (Holm: 0 / 2),1 / 2 (Holm 0 / 2)
+e1: E-1 fixed-step vs SGD local,fednova_equal S=100 − local(SGD),0 gain / 2 loss of 4 (Holm: 0 / 2),1 / 2 (Holm 1 / 2)
+e1: E-1 fixed-step − fixed-epoch,fednova_equal S=100 − fednova_equal one pass,0 gain / 3 loss of 4 (Holm: 0 / 2),0 / 3 (Holm 0 / 3)
+e4: E-4 budget,d_size − best of a–c (b_r52_as_is),0 gain / 0 loss of 1 (Holm: 0 / 0),0 / 0 (Holm 0 / 0)
+e4: E-4 budget,d_equal − best of a–c (b_r52_as_is),0 gain / 0 loss of 1 (Holm: 0 / 0),0 / 0 (Holm 0 / 0)
+e4: E-4 budget baselines vs local,b_r52_as_is − a_local,2 gain / 0 loss of 4 (Holm: 1 / 0),2 / 1 (Holm 2 / 1)
+e4: E-4 budget baselines vs local,c_r52_finetune − a_local,2 gain / 0 loss of 4 (Holm: 2 / 0),3 / 0 (Holm 3 / 0)
+e4: E-4 fullval,d_size − best of a–c (c_r52_finetune),1 gain / 0 loss of 3 (Holm: 0 / 0),1 / 0 (Holm 0 / 0)
+e4: E-4 fullval,d_equal − best of a–c (c_r52_finetune),2 gain / 0 loss of 3 (Holm: 2 / 0),2 / 0 (Holm 2 / 0)
+e4: E-4 fullval baselines vs local,b_r52_as_is − a_local,1 gain / 0 loss of 4 (Holm: 1 / 0),1 / 1 (Holm 1 / 1)
+e4: E-4 fullval baselines vs local,c_r52_finetune − a_local,2 gain / 0 loss of 4 (Holm: 1 / 0),3 / 0 (Holm 3 / 0)
+e4: E-4 budget,d_size − best of a–c (c_r52_finetune),0 gain / 0 loss of 2 (Holm: 0 / 0),0 / 1 (Holm 0 / 0)
+e4: E-4 budget,d_equal − best of a–c (c_r52_finetune),2 gain / 0 loss of 2 (Holm: 0 / 0),2 / 0 (Holm 0 / 0)
+e4: E-4 budget,d_size − best of a–c (a_local),0 gain / 0 loss of 1 (Holm: 0 / 0),0 / 0 (Holm 0 / 0)
+e4: E-4 budget,d_equal − best of a–c (a_local),1 gain / 0 loss of 1 (Holm: 0 / 0),1 / 0 (Holm 1 / 0)
+e4: E-4 fullval,d_size − best of a–c (a_local),0 gain / 0 loss of 1 (Holm: 0 / 0),0 / 0 (Holm 0 / 0)
+e4: E-4 fullval,d_equal − best of a–c (a_local),1 gain / 0 loss of 1 (Holm: 0 / 0),1 / 0 (Holm 1 / 0)
+e3: E-3,fedperh − local,0 gain / 9 loss of 19 (Holm: 0 / 6),0 / 12 (Holm 0 / 8)
+e3: E-3,fedper2 − local,0 gain / 4 loss of 19 (Holm: 0 / 1),4 / 7 (Holm 0 / 5)
+e3: E-3,ditto − local,1 gain / 3 loss of 19 (Holm: 0 / 0),3 / 9 (Holm 0 / 3)
+e3: E-3 sensitivity (per-group lambda),ditto_perfed_sensitivity − local,0 gain / 1 loss of 19 (Holm: 0 / 1),3 / 4 (Holm 0 / 0)
+e11: E-11 federated,fedavg_size − local,1 gain / 4 loss of 13 (Holm: 0 / 3),2 / 4 (Holm 0 / 3)
+e11: E-11 federated,fedavg_equal − local,1 gain / 3 loss of 13 (Holm: 0 / 3),3 / 3 (Holm 1 / 3)
+e11: E-11 federated,fedper_in − local,4 gain / 3 loss of 13 (Holm: 0 / 1),5 / 5 (Holm 3 / 2)
+e11: E-11 references (R1/R5/R6),R1_pooled − local,0 gain / 0 loss of 5 (Holm: 0 / 0),2 / 1 (Holm 0 / 0)
+e11: E-11 references (R1/R5/R6),R6_loo − local,0 gain / 0 loss of 1 (Holm: 0 / 0),1 / 0 (Holm 0 / 0)
+e11: E-11 references (R1/R5/R6),R5_zeroshot − local,0 gain / 0 loss of 4 (Holm: 0 / 0),0 / 0 (Holm 0 / 0)
+e11: E-11 federated user-split sensitivity,fedavg_size − local,0 gain / 3 loss of 5 (Holm: 0 / 2),0 / 3 (Holm 0 / 0)
+e11: E-11 federated user-split sensitivity,fedavg_equal − local,0 gain / 4 loss of 5 (Holm: 0 / 2),0 / 4 (Holm 0 / 1)
+e11: E-11 federated user-split sensitivity,fedper_in − local,0 gain / 0 loss of 5 (Holm: 0 / 0),0 / 3 (Holm 0 / 0)
+e5: E-5 six planned rules,fedavg_size − local,0 gain / 3 loss of 9 (Holm: 0 / 3),1 / 4 (Holm 0 / 0)
+e5: E-5 six planned rules,fedavg_equal − local,0 gain / 5 loss of 9 (Holm: 0 / 3),1 / 5 (Holm 0 / 0)
+e5: E-5 six planned rules,fedprox_mu0.001 − local,0 gain / 3 loss of 9 (Holm: 0 / 3),1 / 3 (Holm 0 / 0)
+e5: E-5 six planned rules,fedper − local,0 gain / 3 loss of 9 (Holm: 0 / 2),1 / 3 (Holm 0 / 0)
+e5: E-5 six planned rules,fedper_in − local,0 gain / 0 loss of 9 (Holm: 0 / 0),0 / 3 (Holm 0 / 0)
+e5: E-5 six planned rules,finetune − local,0 gain / 2 loss of 9 (Holm: 0 / 1),2 / 3 (Holm 0 / 0)
+e5: E-5 FedNova (exploratory),fednova_size − local,0 gain / 5 loss of 9 (Holm: 0 / 3),2 / 5 (Holm 0 / 1)
+e5: E-5 FedNova (exploratory),fednova_equal − local,0 gain / 5 loss of 9 (Holm: 0 / 5),2 / 6 (Holm 0 / 2)
