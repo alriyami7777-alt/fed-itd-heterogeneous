@@ -1,35 +1,19 @@
-# Who Gains from Federated Insider-Threat Detection? Collaboration across Synthetic and Real Security Logs
+# Who Gains from Federated Insider-Threat Detection? Collaboration across Synthetic, Exercise-Based and Enterprise Security Logs
 
-**Status:** under review at *Applied Soft Computing* (Elsevier).
+**Status:** Submitted to Applied Soft Computing (November 2026).
 
 Code, test plan and summary results for the paper. No data is included.
 
-## What it does
+## What the code does
 
-The study treats five public insider-threat datasets as five separate organisations (members):
+Four public insider-threat datasets act as four organisations: CERT r4.2, CERT r5.2, SPEDIA and LANL. TWOS is a fifth, separate test.
+One small neural network (an MLP) is trained with local training, on pooled data, and in federations under several rules (FedAvg, FedProx, FedPer, a private first layer, fine-tuning, FedNova and, in the supplementary experiments, Ditto).
+Each member is compared with its own locally trained model over 20 runs.
+Intervals are two-level (over runs and over test users), and p-values are adjusted with the Holm correction.
 
-- **CERT r4.2** and **CERT r5.2** (synthetic);
-- **SPEDIA v1.0** (attacks by people, simulated normal activity);
-- **LANL** (real enterprise authentication logs with red-team activity);
-- **TWOS** (a logon-only table, split by day; available from its authors only).
+## Paper mapping
 
-Each dataset is turned into the same user-day table with 42 features. One small neural network (an MLP) is trained alone on each member's own data, pooled on all members' data (no privacy, as a reference), and in federations with these rules:
-
-- FedAvg, with size or equal weights;
-- FedProx (μ = 0.001);
-- FedPer;
-- a private first layer;
-- FedAvg with local fine-tuning;
-- FedNova, with size or equal weights.
-
-Added after review:
-
-- plain-SGD FedAvg and FedNova (E-1);
-- a private output head, and the last two layers private (E-3);
-- Ditto (λ = 0.1, E-3);
-- label-scarce training compared with fine-tuning (E-4).
-
-For each member of each federation, the paper reports the gain or loss in PR-AUC against training alone, over 20 runs (seeds 0–19). Leave-one-out and single-source transfer to an unseen organisation are also run.
+[`docs/paper_mapping.md`](docs/paper_mapping.md) links the paper to the code: the supplementary experiments S1–S7, the set-up and rule codes R0–R7, and every figure and table, each with its scripts and result files.
 
 ## Data (not included)
 
@@ -101,7 +85,7 @@ If `FITD_ROOT` is not set, the repository folder is used. No other path is hard-
 
 Run every command from the repository root.
 
-**Main study, 5 seeds (as first run):**
+**Main study, 5 seeds (the original October runs):**
 
 ```bash
 python scripts/run_e1_e2.py mlp_local; python scripts/run_e1_e2.py mlp_pooled
@@ -132,7 +116,7 @@ for j in fedprox fedper mlp_pooled loo zeroshot_mlp; do python scripts/run_revie
 **Statistics:**
 
 ```bash
-python scripts/check_reproduction.py          # seeds 0-4 reproduce the 5-seed scores; sanity runs equal training alone
+python scripts/check_reproduction.py          # seeds 0-4 reproduce the 5-seed scores; sanity runs equal local training
 python scripts/review_stats.py --seeds 0-19   # paired bootstrap, paired t-test, Holm correction
 python scripts/review_metrics.py              # ROC-AUC, recall at 1%, thresholded P/R/F1, worst client
 python scripts/spedia_cluster_boot.py         # user-level bootstrap for SPEDIA
@@ -188,6 +172,27 @@ python scripts/review2/summarise_e3_ditto.py       # E-3: Ditto vs the private f
 
 `e2_C2` and `e2_S1C2` also need `data/derived/cert52_user_day_cov_logon_rebuild.parquet`, built by `scripts/data/rebuild_c52.py` (see above).
 
+**November analyses (F-1 to F-5).** Run these after the steps above.
+
+```bash
+# November analyses (F-1 to F-5). They read the saved per-row predictions under results/preds/.
+python scripts/review2/f2_single_feature.py            # F-2 (needs e11_extra.py to have run)
+python scripts/review2/f5_e2_rates.py                  # F-5
+FITD_THREADS=1 python scripts/review2/f3_twos_out.py 0-4
+FITD_THREADS=2 python scripts/review2/f3_twos_out.py 5-19
+python scripts/review2/f3_transfer.py                  # F-3
+python scripts/review2/f1_scope1.py                    # F-1, the 156 main cases
+python scripts/review2/f1_scopes.py                    # F-1 for E-1, E-3, E-4, E-5, E-11
+python scripts/review2/f1_summary.py
+# F-4 (S7): label meaning. One thread, as the E-2 runs.
+python scripts/data/build_f4_answer_days.py <CERT answers folder>   # -> data/answers_r52/f4_r52_answer_days.csv
+python scripts/review2/f4_label.py check
+for v in R L1 L2 L3; do FITD_THREADS=1 python scripts/review2/f4_label.py $v 0-19; done
+python scripts/review2/f4_stats.py --skip
+```
+
+**Figures.** `python scripts/figures/<script>.py` draws one figure of the paper: `verdicts_bar.py` (Fig. 6), `controlled_bar.py` (Fig. 9), `sgd_bar.py` (Fig. 12) and `twos_bar.py` (Fig. 14). `verdicts_bar.py` and `controlled_bar.py` write to `figures/` (set `FITD_RESULTS` and `FITD_FIGURES` if needed); `sgd_bar.py` and `twos_bar.py` write to the current folder.
+
 **Exploratory, outside the protocol:** `scripts/run_extra.py`, `src/gating.py` and `scripts/summarise_extra.py`.
 
 **Run times.** These are measured on 2 CPU cores with 2 torch threads, per seed:
@@ -213,14 +218,14 @@ Summary tables only. Per-row predictions and per-seed raw files are not included
 | `results/c3_points.csv` | One row per scored member of each two-member federation: similarity and gain |
 | `results/c3_spearman.csv` | Spearman correlation between similarity and gain, with exact permutation p-values (5 seeds) |
 | `results/fedprox_mu.json` | FedProx μ chosen on validation |
-| `results/review/stats_review_s0-19.csv` | Each federated method vs training alone, per member: mean difference, bootstrap and t intervals, Holm-adjusted p-values (20 seeds) |
+| `results/review/stats_review_s0-19.csv` | Each federated method vs local training, per member: mean difference, bootstrap and t intervals, Holm-adjusted p-values (20 seeds) |
 | `results/review/stats_counts_review_s0-19.csv` | Number of significant gains and losses per method under each test |
 | `results/review/loo_summary_s0-19.csv` | Leave-one-out: PR-AUC on the unseen organisation vs the best single source (original file) |
 | `results/review/loo_summary_s0-19_regenerated.csv` | The same summary, regenerated by `scripts/loo_summary.py`: identical means and labels; intervals differ by at most 0.002 |
 | `results/review/loo_all_seeds_s0-19_regenerated.csv` | Leave-one-out PR-AUC per seed and unseen organisation (input to the summary above) |
-| `results/review/fednova_sgd_s0-4.csv` | FedNova with plain local SGD vs training alone and vs FedNova with Adam (5 seeds) |
+| `results/review/fednova_sgd_s0-4.csv` | FedNova with plain local SGD vs local training and vs FedNova with Adam (5 seeds) |
 | `results/review/metrics_by_cell.csv` | Secondary metrics per method, federation and member: ROC-AUC, recall at 1%, precision, recall, F1 |
-| `results/review/spedia_cluster_boot.csv` | SPEDIA user-level bootstrap intervals for PR-AUC and for the difference from training alone |
+| `results/review/spedia_cluster_boot.csv` | SPEDIA user-level bootstrap intervals for PR-AUC and for the difference from local training |
 | `results/review/c3_spearman_review_s0-19.csv` | Spearman correlation between similarity and gain (20 seeds) |
 | `results/review2/stats_e1.csv` | E-1: plain-SGD FedAvg and FedNova vs each member's SGD local baseline; FedNova vs FedAvg with the same solver; the fixed-step variant (20 seeds) |
 | `results/review2/stats_e2.csv` | E-2: controlled federation within CERT r5.2, per variant and member |
@@ -241,6 +246,13 @@ Summary tables only. Per-row predictions and per-seed raw files are not included
 | `results/review2/e4_per_seed_winner.csv` | E-4: test PR-AUC of every option on each seed, and which option won |
 
 The E-1 convergence plots (validation PR-AUC per round, seeds 0–4) are made by `scripts/review2/e1_convergence_plots.py`. Each `summarise_*.py` script also writes a readable Markdown summary next to these files.
+
+**November analyses (F-1 to F-5)** are in `results/review2/`: the two-level intervals (`stats_twolevel_s0-19.csv`, `stats_twolevel_e1.csv`, `stats_twolevel_e3.csv`, `stats_twolevel_e4.csv`, `stats_twolevel_e5.csv`, `stats_twolevel_e11.csv`, `f1_summary_counts.csv`), the single-feature check (`f2_*.csv`), the transfer matrix and its correlations (`f3_*.csv`), the label-meaning test (`f4_*.csv`) and the positive rates of the controlled split (`f5_e2_rates_summary.csv`). `docs/paper_mapping.md` says which figure or table each one supports. `stats_twolevel_s0-19.csv` holds the interval, p-value and Holm-adjusted p-values for every cell of Table A.14. `stats_twolevel_e11.csv` is at group level only.
+
+## Known gaps
+
+- Plot script: not in the repository for Figs. 7, 8, 13 and 15. These charts were drawn from the values in the result files named in `docs/paper_mapping.md`.
+- C-1 and C-2 have no summary file here, but both can be repeated: `scripts/run_confirm.py` (jobs `c1` and `c2`) runs them and `scripts/summarise_confirm.py` prints their tables.
 
 ## Test plan
 

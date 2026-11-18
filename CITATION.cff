@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use this code, please cite it as below."
-title: "Who Gains from Federated Insider-Threat Detection? Collaboration across Synthetic and Real Security Logs"
+title: "Who Gains from Federated Insider-Threat Detection? Collaboration across Synthetic, Exercise-Based and Enterprise Security Logs"
 version: 0.1.0
 license: MIT
 repository-code: "https://github.com/alriyami7777-alt/fed-itd-heterogeneous"
